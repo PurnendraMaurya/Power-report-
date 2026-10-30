@@ -386,7 +386,7 @@ async function submitEntry(e){
 
     const out = await res.json();
     if (out && out.status === "success"){
-      showMsg("ok", "✅ एंट्री सफलतापूर्वक सेव हो गई! (Sr. No. " + out.srNo + ")");
+      showMsg("ok", "✅ एंट्री सफलतापूर्वक सेव हो गई! ");
       resetForm();
     } else {
       throw new Error((out && out.message) || "Unknown error");
