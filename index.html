@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Power Cut & DG Entry | पावर कट एवं DG एंट्री</title>
+
+<!-- ╔══════════════════════════════════════════════════════════════╗
+     ║  फाइल का नक्शा / FILE MAP  (Ctrl+F से "SECTION" खोजें)       ║
+     ║  SECTION 1 : CONFIG  (यहाँ URL / नाम / विकल्प बदलें)  ← ज़रूरी ║
+     ║  SECTION 2 : CSS     (रंग और डिज़ाइन)                         ║
+     ║  SECTION 3 : HTML    (फॉर्म का ढाँचा)                         ║
+     ║  SECTION 4 : JAVASCRIPT (लॉजिक / Submit)                      ║
+     ╚══════════════════════════════════════════════════════════════╝ -->
+
+<!-- ════════════════════════════════════════════════════════════════
+     SECTION 2 : CSS — रंग बदलने के लिए सिर्फ :root वाले रंग बदलें
+     ════════════════════════════════════════════════════════════════ -->
+<style>
+/* ---------- 2.1 रंग / COLORS (यहाँ बदलें) ---------- */
+:root{
+  --bg:#eef1f4;          /* पेज का बैकग्राउंड */
+  --header:#1f2d3d;      /* ऊपर की पट्टी */
+  --accent:#f5a000;      /* पीला-नारंगी (इंडस्ट्रियल) */
+  --card:#ffffff;
+  --text:#1b2430;
+  --muted:#5d6b7a;
+  --border:#c9d1da;
+  --red:#d62828;
+  --green:#1e8e3e;
+  --blue:#1565c0;
+  --grey:#5f6b76;
+  --orange:#e8710a;
+}
+
+/* ---------- 2.2 बेसिक ---------- */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.4}
+
+/* ---------- 2.3 हेडर ---------- */
+header{background:var(--header);color:#fff;padding:14px 16px;border-bottom:5px solid var(--accent);text-align:center}
+header h1{font-size:20px;letter-spacing:.5px}
+header p{font-size:13px;color:#cdd6df;margin-top:2px}
+
+/* ---------- 2.4 कार्ड / सेक्शन ---------- */
+main{max-width:720px;margin:0 auto;padding:12px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px}
+.card h2{font-size:16px;background:var(--header);color:#fff;margin:-14px -14px 12px;padding:9px 14px;border-radius:10px 10px 0 0;border-left:6px solid var(--accent)}
+
+/* ---------- 2.5 इनपुट फील्ड ---------- */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.full{grid-column:1/-1}
+label{display:block;font-weight:600;font-size:14px;margin-bottom:4px}
+label small{font-weight:400;color:var(--muted)}
+.req{color:var(--red)}
+input,select,textarea{width:100%;font-size:17px;padding:12px;border:2px solid var(--border);border-radius:8px;background:#fff;color:var(--text);font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+textarea{min-height:80px;resize:vertical}
+.error-field{border-color:var(--red)!important;background:#fff4f4}
+
+/* ---------- 2.6 Shift बटन ---------- */
+.seg{display:flex;gap:8px}
+.seg button{flex:1;padding:12px;font-size:17px;font-weight:700;border:2px solid var(--border);background:#fff;border-radius:8px;cursor:pointer}
+.seg button.on{background:var(--header);color:#fff;border-color:var(--header)}
+
+/* ---------- 2.7 EVENT बड़े बटन ---------- */
+.events{display:block}
+.evgroup{margin-bottom:14px}
+.evgroup:last-child{margin-bottom:0}
+.evtitle{font-weight:800;font-size:15px;margin-bottom:6px;padding-left:8px;border-left:5px solid var(--accent)}
+.evrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hint{font-size:13px;color:var(--muted);margin-bottom:12px}
+.ev{border:3px solid transparent;border-radius:10px;padding:14px 8px;color:#fff;font-weight:800;font-size:16px;cursor:pointer;text-align:center;line-height:1.25;opacity:.55;transition:.15s}
+.ev span{display:block;font-size:13px;font-weight:600;margin-top:3px}
+.ev.on{opacity:1;border-color:#000;box-shadow:0 0 0 3px var(--accent)}
+.ev[data-color=red]{background:var(--red)}
+.ev[data-color=green]{background:var(--green)}
+.ev[data-color=blue]{background:var(--blue)}
+.ev[data-color=orange]{background:var(--orange)}
+.ev[data-color=grey]{background:var(--grey)}
+
+/* ---------- 2.8 SUBMIT बटन ---------- */
+#submitBtn{width:100%;padding:18px;font-size:20px;font-weight:800;letter-spacing:1px;border:none;border-radius:10px;background:var(--accent);color:#1b2430;cursor:pointer}
+#submitBtn:disabled{opacity:.6;cursor:not-allowed}
+.reset-link{display:block;text-align:center;margin-top:10px;color:var(--muted);font-size:14px;background:none;border:none;width:100%;padding:8px;cursor:pointer;text-decoration:underline}
+
+/* ---------- 2.9 संदेश (Success / Error) ---------- */
+#msg{display:none;padding:14px;border-radius:10px;margin-bottom:14px;font-weight:700;font-size:16px}
+#msg.ok{display:block;background:#e6f4ea;color:#14602b;border:2px solid var(--green)}
+#msg.err{display:block;background:#fdecea;color:#8b1a1a;border:2px solid var(--red)}
+#msg.warn{display:block;background:#fff4e0;color:#7a4a00;border:2px solid var(--orange)}
+
+footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 10px 30px}
+
+@media(max-width:420px){.grid{grid-template-columns:1fr}.events{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SECTION 3 : HTML — फॉर्म का ढाँचा
+     ════════════════════════════════════════════════════════════════ -->
+
+<!-- ---------- 3.1 हेडर ---------- -->
+<header>
+  <h1>⚡ POWER CUT & DG ENTRY</h1>
+  <p>बिजली कटौती एवं DG एंट्री फॉर्म (PURNENDRA KUSHWAHA)</p>
+</header>
+
+<main>
+<!-- ---------- 3.2 संदेश बॉक्स ---------- -->
+<div id="msg" role="alert"></div>
+
+<form id="entryForm" novalidate autocomplete="off">
+
+  <!-- ===== 3.3 BLOCK A : बेसिक जानकारी / Basic Information ===== -->
+  <section class="card">
+    <h2>A. बेसिक जानकारी / Basic Information</h2>
+    <div class="grid">
+      <div>
+        <label for="date">तारीख / Date <span class="req">*</span></label>
+        <input type="date" id="date">
+      </div>
+      <div>
+        <label for="time">समय / Time <span class="req">*</span></label>
+        <input type="time" id="time">
+      </div>
+
+      <div class="full">
+        <label for="operator">ऑपरेटर का नाम / Operator Name <span class="req">*</span></label>
+        <select id="operator"></select>  <!-- नाम SECTION 1 CONFIG में बदलें -->
+      </div>
+
+      <div>
+        <label>शिफ्ट / Shift</label>
+        <div class="seg" id="shiftGroup"></div>
+      </div>
+      <div>
+        <label for="department">विभाग / Department</label>
+        <select id="department"></select>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 3.4 BLOCK B : इवेंट चुनें / Power & DG Event ===== -->
+  <section class="card">
+    <h2>B. क्या हुआ? / Select Event <span class="req" style="color:#ffd24d">*</span></h2>
+    <p class="hint">हर ग्रुप में दो में से एक चुनें / Pick one in each group</p>
+    <div class="events" id="eventGroup"></div>  <!-- ग्रुप और बटन SECTION 1.6 CONFIG से बनते हैं -->
+  </section>
+
+  <!-- ===== 3.5 BLOCK C : अतिरिक्त जानकारी / Additional Information ===== -->
+  <section class="card">
+    <h2>C. अतिरिक्त जानकारी / Additional Info <small style="font-weight:400">(वैकल्पिक)</small></h2>
+    <div class="grid">
+      <div>
+        <label for="dgHour">DG मीटर रीडिंग<br><small>DG Running Hour / Meter</small></label>
+        <input type="number" id="dgHour" inputmode="decimal" step="any" min="0" placeholder="जैसे 1234.5">
+      </div>
+      <div>
+        <label for="cutHour">पावर कट घंटे<br><small>Power Cut Hour</small></label>
+        <input type="number" id="cutHour" inputmode="decimal" step="any" min="0" placeholder="जैसे 1.5">
+      </div>
+      <div class="full">
+        <label for="remarks">टिप्पणी / Remarks</label>
+        <textarea id="remarks" placeholder="कुछ और लिखना हो तो यहाँ लिखें..."></textarea>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 3.6 SUBMIT बटन ===== -->
+  <button type="submit" id="submitBtn">SUBMIT ENTRY / एंट्री जमा करें</button>
+  <button type="button" class="reset-link" id="clearBtn">फॉर्म साफ़ करें / Clear Form</button>
+</form>
+</main>
+
+<footer>* लाल तारे वाले फील्ड ज़रूरी हैं ( PURNENDRA KUSHWAHA) </footer>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     SECTION 4 : JAVASCRIPT
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+/* ════════════════════════════════════════════════════════════════
+   SECTION 1 : CONFIG  ◄◄◄  सबसे ज़रूरी — यहीं सब कुछ बदलें  ►►►
+   ════════════════════════════════════════════════════════════════ */
+
+/* ---------- 1.1 GOOGLE APPS SCRIPT URL (यहाँ अपना URL पेस्ट करें) ----------
+   Apps Script में Deploy → Web app करने के बाद मिला URL नीचे "" के अंदर डालें.
+   उदाहरण: "https://script.google.com/macros/s/AKfyc.../exec"              */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwU5hBeYowqo39j9scxyikZTTOOvQ86_a6JV5HYEuS6AklHNqjeQ7_Hitfrgxf5LmlD/exec";
+
+/* ---------- 1.2 GOOGLE SHEET URL (सिर्फ जानकारी के लिए; असली लिंक Code.gs में) ---------- */
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwU5hBeYowqo39j9scxyikZTTOOvQ86_a6JV5HYEuS6AklHNqjeQ7_Hitfrgxf5LmlD/exec";
+
+/* ---------- 1.3 ऑपरेटर की लिस्ट (नाम जोड़ें / हटाएं) ---------- */
+const OPERATORS = [
+  "ACHALARAM",
+  "SHRAWAN RAM",
+  "BHAGIRATH",
+  "ATUL GUPTA",
+  "JAIKISHAN",
+  "HARISH",
+];
+
+/* ---------- 1.4 शिफ्ट की लिस्ट ---------- */
+const SHIFTS = ["A", "B"];
+
+/* ---------- 1.5 विभाग की लिस्ट ---------- */
+const DEPARTMENTS = ["Production", "Maintenance", "Other"];
+
+/* ---------- 1.6 इवेंट के बटन (value शीट में सेव होगा; color = red/green/blue/orange/grey) ---------- */
+/* तीन ग्रुप, हर ग्रुप में दो विकल्प (ON / OFF जैसे). हर ग्रुप में से एक चुना जा सकता है.
+   एक से ज़्यादा ग्रुप चुनने पर Sheet के Event Type में "A + B" लिखा जाएगा. */
+const EVENT_GROUPS = [
+  { title: "POWER / बिजली", options: [
+      { value: "POWER CUT",     hi: "बिजली चली गई",  color: "red"   },
+      { value: "MAIN POWER ON", hi: "बिजली वापस आई", color: "green" }
+  ]},
+  { title: "DG", options: [
+      { value: "DG ON",  hi: "DG चालू किया", color: "orange" },
+      { value: "DG OFF", hi: "DG बंद किया",  color: "grey"   }
+  ]},
+  { title: "DG STATUS", options: [
+      { value: "DG RUNNING", hi: "DG चल रहा है", color: "blue" },
+      { value: "DG STOPPED", hi: "DG बंद है",    color: "grey" }
+  ]}
+];
+
+/* ---------- 1.7 कौन से फील्ड ज़रूरी (required) हैं ---------- */
+const REQUIRED = { date: true, time: true, operator: true, event: true };
+
+/* ════════════════════════════════════════════════════════════════
+   SECTION 4.A : फॉर्म तैयार करना (Dropdown / बटन बनाना)
+   — आम तौर पर यहाँ बदलाव की ज़रूरत नहीं —
+   ════════════════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+let selectedShift = "";
+let selectedEvents = {};            // हर ग्रुप का चुना हुआ विकल्प {0:"POWER CUT", 1:"DG ON"...}
+function getEventText(){
+  return EVENT_GROUPS.map((g, i) => selectedEvents[i]).filter(Boolean).join(" + ");
+}
+let isSubmitting = false;           // Double Submission रोकने का फ्लैग
+let submissionId = newId();         // हर एंट्री की यूनिक ID
+
+function newId(){
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+function pad(n){ return String(n).padStart(2, "0"); }
+
+function fillOptions(sel, list, placeholder){
+  sel.innerHTML = "";
+  if (placeholder) sel.add(new Option(placeholder, ""));
+  list.forEach(v => sel.add(new Option(v, v)));
+}
+
+function buildForm(){
+  fillOptions($("operator"), OPERATORS, "-- नाम चुनें / Select Name --");
+  fillOptions($("department"), DEPARTMENTS, "-- चुनें / Select --");
+
+  // Shift बटन
+  $("shiftGroup").innerHTML = "";
+  SHIFTS.forEach(s => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = s; b.dataset.v = s;
+    b.onclick = () => {
+      selectedShift = (selectedShift === s) ? "" : s;   // दोबारा दबाने पर हट जाएगा
+      [...$("shiftGroup").children].forEach(x => x.classList.toggle("on", x.dataset.v === selectedShift));
+    };
+    $("shiftGroup").appendChild(b);
+  });
+
+  // Event बटन
+  $("eventGroup").innerHTML = "";
+  EVENT_GROUPS.forEach((g, gi) => {
+    const wrap = document.createElement("div");
+    wrap.className = "evgroup";
+    wrap.innerHTML = '<div class="evtitle">' + g.title + '</div>';
+    const row = document.createElement("div");
+    row.className = "evrow";
+    g.options.forEach(ev => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "ev"; b.dataset.v = ev.value; b.dataset.color = ev.color;
+      b.innerHTML = ev.value + "<span>" + ev.hi + "</span>";
+      b.onclick = () => {
+        selectedEvents[gi] = (selectedEvents[gi] === ev.value) ? "" : ev.value;  // दोबारा दबाने पर हटेगा
+        [...row.children].forEach(x => x.classList.toggle("on", x.dataset.v === selectedEvents[gi]));
+        $("eventGroup").classList.remove("error-field");
+      };
+      row.appendChild(b);
+    });
+    wrap.appendChild(row);
+    $("eventGroup").appendChild(wrap);
+  });
+}
+
+/* ---------- 4.B : अभी की तारीख/समय भरना (बाद में ऑपरेटर बदल सकता है) ---------- */
+function setNow(){
+  const d = new Date();
+  $("date").value = d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate());
+  $("time").value = pad(d.getHours()) + ":" + pad(d.getMinutes());
+}
+
+/* ---------- 4.C : संदेश दिखाना ---------- */
+function showMsg(type, text){
+  const m = $("msg");
+  m.className = type;          // ok / err / warn
+  m.textContent = text;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  if (type === "ok") setTimeout(() => { m.className = ""; m.style.display = ""; }, 8000);
+}
+function clearMsg(){ $("msg").className = ""; $("msg").textContent = ""; }
+
+/* ---------- 4.D : फॉर्म रीसेट ---------- */
+function resetForm(){
+  $("entryForm").reset();
+  selectedShift = ""; selectedEvents = {};
+  document.querySelectorAll(".seg button, .ev").forEach(x => x.classList.remove("on"));
+  document.querySelectorAll(".error-field").forEach(x => x.classList.remove("error-field"));
+  setNow();
+  submissionId = newId();      // अगली एंट्री के लिए नई ID
+}
+
+/* ---------- 4.E : जाँच (Validation) ---------- */
+function validate(){
+  let ok = true;
+  document.querySelectorAll(".error-field").forEach(x => x.classList.remove("error-field"));
+  const check = (id) => { if (REQUIRED[id === "event" ? "event" : id] && !$(id).value){ $(id).classList.add("error-field"); ok = false; } };
+  check("date"); check("time"); check("operator");
+  if (REQUIRED.event && !getEventText()){ $("eventGroup").classList.add("error-field"); ok = false; }
+  return ok;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SECTION 4.F : SUBMIT — Google Sheets में डेटा भेजना
+   ════════════════════════════════════════════════════════════════ */
+async function submitEntry(e){
+  e.preventDefault();
+  if (isSubmitting) return;                       // Double click रोकें
+  clearMsg();
+
+  if (!validate()){
+    showMsg("err", "❌ कृपया लाल निशान वाले ज़रूरी फील्ड भरें। / Please fill required fields.");
+    return;
+  }
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf("PASTE_") === 0){
+    showMsg("err", "⚠️ Apps Script URL सेट नहीं है। index.html में SECTION 1 → APPS_SCRIPT_URL भरें।");
+    return;
+  }
+  if (!navigator.onLine){
+    showMsg("err", "❌ इंटरनेट बंद है। इंटरनेट चालू करके दोबारा Submit करें। / No internet.");
+    return;
+  }
+
+  // ---- भेजा जाने वाला डेटा (Sheet के कॉलम इसी क्रम में बनेंगे) ----
+  const payload = {
+    submissionId: submissionId,
+    date:       $("date").value,
+    time:       $("time").value,
+    operator:   $("operator").value,
+    shift:      selectedShift,
+    department: $("department").value,
+    eventType:  getEventText(),
+    dgHour:     $("dgHour").value,
+    cutHour:    $("cutHour").value,
+    remarks:    $("remarks").value.trim()
+  };
+
+  isSubmitting = true;
+  const btn = $("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "भेज रहे हैं... / Sending...";
+
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 25000);   // 25 सेकंड टाइमआउट
+
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },  // Preflight से बचने के लिए
+      body: JSON.stringify(payload),
+      signal: ctrl.signal
+    });
+    clearTimeout(timer);
+
+    const out = await res.json();
+    if (out && out.status === "success"){
+      showMsg("ok", "✅ एंट्री सफलतापूर्वक सेव हो गई! (Sr. No. " + out.srNo + ")");
+      resetForm();
+    } else {
+      throw new Error((out && out.message) || "Unknown error");
+    }
+  } catch (err){
+    showMsg("err", "❌ एंट्री सेव नहीं हुई। इंटरनेट / Google Sheet की समस्या है। दोबारा Submit करें। (" + (err.name === "AbortError" ? "Timeout" : err.message) + ")");
+  } finally {
+    isSubmitting = false;
+    btn.disabled = false;
+    btn.textContent = "SUBMIT ENTRY / एंट्री जमा करें";
+  }
+}
+
+/* ---------- 4.G : शुरुआत (Page Load) ---------- */
+buildForm();
+setNow();
+$("entryForm").addEventListener("submit", submitEntry);
+$("clearBtn").addEventListener("click", () => { clearMsg(); resetForm(); });
+</script>
+</body>
+</html>
